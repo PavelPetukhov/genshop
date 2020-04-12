@@ -1,0 +1,14 @@
+application:
+  validate_schema_on_start: true
+
+database:
+  host : localhost
+  user : demouser
+  passwd : Password_123
+  database : demodb
+
+ameritrade:
+  client_id: GD7ONKYFFSYGOKAXFEFRKZDM3LRPAYXM
+
+portfolio:
+  instruments : [CSCO, KO, QCOM]

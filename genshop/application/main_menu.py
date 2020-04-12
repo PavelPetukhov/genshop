@@ -6,15 +6,25 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-import sys
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-from gui.strategy_window import Ui_Form as StrategyForm
-from gui.symbol_update import Ui_Form as SymbolUpdateForm
+from genshop.application.strategy_window import Ui_Form as StrategyForm
+from genshop.application.symbol_update import Ui_Form as SymbolUpdateForm
 
 
 class Ui_MainWindow(object):
+    def __init__(self, config, exchange_client, db_client):
+        super(Ui_MainWindow, self).__init__()
+        self.cfg = config
+        self.exchange_client = exchange_client
+        self.db_client = db_client
+
+        self.symbol_form = None
+
+        # self.process_symbol_request('GOOG')
+        # self.process_symbol_request_all()
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -94,8 +104,9 @@ class Ui_MainWindow(object):
 
     def on_symbol_update_clicked(self):
         self.window = QtWidgets.QMainWindow()
-        ui = SymbolUpdateForm()
-        ui.setupUi(self.window)
+        self.symbol_form = SymbolUpdateForm()
+        self.symbol_form.setupUi(self.window)
+        self.symbol_form.pushButton.clicked.connect(self.on_symbol_request_click)
         self.window.show()
 
     def on_hedger_strategy_clicked(self):
@@ -104,12 +115,41 @@ class Ui_MainWindow(object):
         ui.setupUi(self.window)
         self.window.show()
 
+    def on_symbol_request_click(self):
+        requested_symbol = self.symbol_form.lineEdit.text()
+
+        if not requested_symbol:
+            self.process_symbol_request_all()
+        else:
+            self.process_symbol_request(requested_symbol)
+
+    def process_symbol_request_all(self):
+        symbols = self.db_client.get_symbols()
+        for symbol in symbols:
+            self.process_symbol_request(symbol)
+
+    def process_symbol_request(self, requested_symbol):
+        symbol_is_valid = self.db_client.check_symbol(requested_symbol)
+        if not symbol_is_valid:
+            raise Exception(f'{requested_symbol} was not found in portfolio')
+
+        last_timestamp = self.db_client.check_if_symbol_is_present(requested_symbol)
+        if not last_timestamp:
+            data = self.exchange_client.get_ticker_daily_data_all(requested_symbol)
+        else:
+            data = self.exchange_client.get_ticker_daily_data(last_timestamp, requested_symbol)
+
+        if data:
+            self.db_client.store_ticker_data(requested_symbol, data)
+        else:
+            raise Exception(f'{requested_symbol} data was not received from ameritrade client')
+
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    ui = Ui_MainWindow(None, None, None)
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
