@@ -36,7 +36,14 @@ class Ui_Form(object):
         self.pushButton = QtWidgets.QPushButton(Form)
         self.pushButton.setGeometry(QtCore.QRect(350, 200, 89, 25))
         self.pushButton.setObjectName("pushButton")
-        # self.pushButton.clicked.connect(self.button_click)
+
+        self.StatusText = QtWidgets.QLabel(Form)
+        self.StatusText.setGeometry(QtCore.QRect(300, 250, 331, 17))
+        self.StatusText.setText("")
+        self.StatusText.setObjectName("StatusText")
+        self.StatusLabel = QtWidgets.QLabel(Form)
+        self.StatusLabel.setGeometry(QtCore.QRect(250, 250, 67, 17))
+        self.StatusLabel.setObjectName("StatusLabel")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -47,6 +54,7 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "UPDATE DATA"))
         self.label_2.setText(_translate("Form", "Symbol:"))
         self.pushButton.setText(_translate("Form", "Update"))
+        self.StatusLabel.setText(_translate("Form", "Status:"))
 
 
 if __name__ == "__main__":

@@ -118,10 +118,17 @@ class Ui_MainWindow(object):
     def on_symbol_request_click(self):
         requested_symbol = self.symbol_form.lineEdit.text()
 
-        if not requested_symbol:
-            self.process_symbol_request_all()
+        self.symbol_form.StatusText.setText("In progress")
+
+        try:
+            if not requested_symbol:
+                self.process_symbol_request_all()
+            else:
+                self.process_symbol_request(requested_symbol)
+        except Exception as err:
+            self.symbol_form.StatusText.setText(f"Failed on {err}")
         else:
-            self.process_symbol_request(requested_symbol)
+            self.symbol_form.StatusText.setText("Done")
 
     def process_symbol_request_all(self):
         symbols = self.db_client.get_symbols()
