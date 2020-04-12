@@ -13,13 +13,6 @@ class DBClient:
         )
         self.cursor = self.db.cursor(buffered=True)
 
-        # cursor.execute("CREATE TABLE tickers (name VARCHAR(255))")
-        # cursor.execute("CREATE TABLE candles (sympol VARCHAR(20), type VARCHAR(20), open FLOAT, high FLOAT, low FLOAT, close FLOAT, timestame TIMESTAMP)")
-        # self.cursor.execute("SHOW TABLES")
-        # for x in self.cursor:
-        #     print(x)
-        # self.check_if_symbol_is_present('APPL')
-
     def store_ticker_data(self, symbol, data):
         self.cursor.execute(f"SELECT * FROM Portfolio WHERE symbol = '{symbol}';")
         if self.cursor.rowcount == 0:
