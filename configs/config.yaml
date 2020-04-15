@@ -1,5 +1,7 @@
 application:
   validate_schema_on_start: true
+  path_to_log_file: /home/pasha/sandbox/genshop/log.txt
+  logging_level: INFO
 
 database:
   host : localhost
@@ -8,6 +10,7 @@ database:
   database : demodb
 
 ameritrade:
+  max_dataset_in_days: 1825 # 5 years
   client_id: GD7ONKYFFSYGOKAXFEFRKZDM3LRPAYXM
 
 portfolio:
