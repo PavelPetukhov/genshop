@@ -40,6 +40,10 @@ class Ui_Form(object):
         self.dateTimeEdit_2.setGeometry(QtCore.QRect(510, 160, 194, 26))
         self.dateTimeEdit_2.setObjectName("dateTimeEdit_2")
 
+        self.checkBox = QtWidgets.QCheckBox(Form)
+        self.checkBox.setGeometry(QtCore.QRect(170, 210, 351, 23))
+        self.checkBox.setObjectName("checkBox")
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -51,6 +55,7 @@ class Ui_Form(object):
         self.label_3.setText(_translate("Form", "Date range:"))
         self.label_4.setText(_translate("Form", "To:"))
         self.pushButton.setText(_translate("Form", "Run Backtest"))
+        self.checkBox.setText(_translate("Form", "Use minute candles (default is EOF)"))
 
 
 if __name__ == "__main__":

@@ -12,18 +12,20 @@ from PyQt5 import QtCore, QtWidgets
 from genshop.application.strategy_window import Ui_Form as StrategyForm
 from genshop.application.symbol_update import Ui_Form as SymbolUpdateForm
 
+from genshop.logger import logging
 
 class Ui_MainWindow(object):
     def __init__(self, config, exchange_client, db_client):
         super(Ui_MainWindow, self).__init__()
+        self.logger = logging.getLogger()
         self.cfg = config
         self.exchange_client = exchange_client
         self.db_client = db_client
 
         self.symbol_form = None
 
-        # self.process_symbol_request('GOOG')
-        # self.process_symbol_request_all()
+        # self.db_client.add_symbol('GOOGL')
+        # self.process_symbol_request('GOOGL')
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -116,9 +118,16 @@ class Ui_MainWindow(object):
         self.window.show()
 
     def on_symbol_request_click(self):
+        self.symbol_form.StatusText.setText("In progress")
+        self.symbol_form.StatusText.text()
+
         requested_symbol = self.symbol_form.lineEdit.text()
 
-        self.symbol_form.StatusText.setText("In progress")
+        self.logger.info(f'on_symbol_request_click started for {requested_symbol}')
+
+        symbol_is_valid = self.db_client.check_symbol(requested_symbol)
+        if not symbol_is_valid:
+            self.db_client.add_symbol(requested_symbol)
 
         try:
             if not requested_symbol:
@@ -126,30 +135,46 @@ class Ui_MainWindow(object):
             else:
                 self.process_symbol_request(requested_symbol)
         except Exception as err:
-            self.symbol_form.StatusText.setText(f"Failed on {err}")
+            self.logger.info(f'on_symbol_request_click failed on {err}')
+            self.symbol_form.StatusText.setText(f"Failed. Check Logs")
         else:
             self.symbol_form.StatusText.setText("Done")
 
     def process_symbol_request_all(self):
+        self.logger.info(f'process_symbol_request_all started')
+
         symbols = self.db_client.get_symbols()
         for symbol in symbols:
             self.process_symbol_request(symbol)
 
     def process_symbol_request(self, requested_symbol):
+        self.logger.info(f'process_symbol_request started for {requested_symbol}')
+
         symbol_is_valid = self.db_client.check_symbol(requested_symbol)
         if not symbol_is_valid:
             raise Exception(f'{requested_symbol} was not found in portfolio')
 
         last_timestamp = self.db_client.check_if_symbol_is_present(requested_symbol)
         if not last_timestamp:
+            eod_data = self.exchange_client.get_ticker_eod_data_all(requested_symbol)
             data = self.exchange_client.get_ticker_daily_data_all(requested_symbol)
         else:
+            eod_data = self.exchange_client.get_ticker_eod_data(last_timestamp, requested_symbol)
             data = self.exchange_client.get_ticker_daily_data(last_timestamp, requested_symbol)
 
         if data:
-            self.db_client.store_ticker_data(requested_symbol, data)
+            self.db_client.store_minute_ticker_data(requested_symbol, data)
         else:
-            raise Exception(f'{requested_symbol} data was not received from ameritrade client')
+            msg_ = f'{requested_symbol} minute data was not received from ameritrade client'
+            self.logger.info(msg_)
+            raise Exception(msg_)
+
+        if eod_data:
+            self.db_client.store_eod_ticker_data(requested_symbol, eod_data)
+        else:
+            msg_ = f'{requested_symbol} eod data was not received from ameritrade client'
+            self.logger.info(msg_)
+            raise Exception(msg_)
 
 
 if __name__ == "__main__":

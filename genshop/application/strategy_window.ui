@@ -57,7 +57,7 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>180</x>
+     <x>170</x>
      <y>170</y>
      <width>81</width>
      <height>17</height>
@@ -111,6 +111,19 @@
      <width>194</width>
      <height>26</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>210</y>
+     <width>351</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Use minute candles (default is EOF)</string>
    </property>
   </widget>
  </widget>
