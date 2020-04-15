@@ -1,8 +1,10 @@
 import yaml
+import json
 import argparse
 from munch import DefaultMunch
 
 from genshop.application.app import App
+from genshop.logger.logging import setup_logging
 
 
 def get_config():
@@ -21,6 +23,9 @@ def system_start():
     cfg = get_config()
     if cfg is None:
         raise Exception("Unable to extract the given config")
+
+    logger = setup_logging(cfg.application, 'genshop')
+    logger.info('Configurations: %s', json.dumps(cfg))
 
     App(cfg)
 

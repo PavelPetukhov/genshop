@@ -1,0 +1,14 @@
+certifi==2020.4.5.1
+chardet==3.0.4
+dnspython==1.16.0
+idna==2.9
+munch==2.5.0
+mysql-connector-python==8.0.5
+protobuf==3.6.1
+PyMySQL==0.9.3
+PyQt5==5.14.2
+PyQt5-sip==12.7.2
+PyYAML==5.3.1
+requests==2.23.0
+six==1.14.0
+urllib3==1.25.8
