@@ -32,6 +32,16 @@ class DBClient:
     def store_minute_ticker_data(self, symbol, data):
         self.store_ticker_data(symbol, data, minute_data=True)
 
+    def check_if_transaction_is_recorded(self, table_name, symbol, timestamp):
+        self.logger.debug(
+            f'check_if_transaction_is_recorded started for {table_name}, {symbol}, {timestamp}')
+
+        self.cursor.execute(
+            f" select 1 from {table_name} where symbol = {symbol} and timestamp = '{timestamp}';")
+        if self.cursor.rowcount == 0:
+            return False
+        return True
+
     def store_ticker_data(self, symbol, data, minute_data=True):
         self.logger.info(f'store_ticker_data started for {symbol}, minute_data {minute_data}')
 
@@ -45,11 +55,18 @@ class DBClient:
         except KeyError:
             raise Exception(f'Failed to parse cursor db data')
 
+        is_present = True
         table_name = MINUTE_TABLE if minute_data else EOD_TABLE
         for elem in sorted(data['candles'], key=lambda elem: elem['datetime']):
             open, high, low, close, volume = elem['open'], elem['high'], \
                                              elem['low'], elem['close'], elem['volume']
             timestamp = datetime.datetime.fromtimestamp(int(elem['datetime'])/1000)
+
+            if is_present:
+                is_present = self.check_if_transaction_is_recorded(table_name, key, timestamp)
+                if is_present:
+                    continue
+
             self.cursor.execute(f"INSERT INTO {table_name} "
                                 f"(symbol, open, high, low, close, volume, timestamp) "
                                 f"VALUES "
