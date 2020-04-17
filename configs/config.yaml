@@ -1,12 +1,12 @@
 application:
-  validate_schema_on_start: true
   path_to_log_file: /home/pasha/sandbox/genshop/log.txt
+  validate_schema_on_start: true
   logging_level: INFO
 
 database:
   host : localhost
-  user : demouser
-  passwd : Password_123
+  user : genshopuser
+  passwd : GenShop_123
   database : demodb
 
 ameritrade:

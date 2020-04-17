@@ -15,5 +15,7 @@
     4) login as a created user: mysql -u genshopuser -p
     5) CREATE DATABASE dbname;
 
+4) Open configs/config.yaml and add valid path to log file to path_to_log_file param
+
 To run application:
 python3 -m run -config=configs/config.yaml
