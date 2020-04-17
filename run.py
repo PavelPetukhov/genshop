@@ -27,7 +27,10 @@ def system_start():
     logger = setup_logging(cfg.application, 'genshop')
     logger.info('Configurations: %s', json.dumps(cfg))
 
-    App(cfg)
+    try:
+        App(cfg)
+    except Exception as err:
+        logger.info(f'App failed on {err}')
 
 
 if __name__ == "__main__":
