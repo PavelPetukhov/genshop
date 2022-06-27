@@ -3,7 +3,7 @@ chardet==3.0.4
 dnspython==1.16.0
 idna==2.9
 munch==2.5.0
-mysql-connector-python==8.0.5
+mysql-connector-python==8.0.14
 protobuf==3.6.1
 PyMySQL==0.9.3
 PyQt5==5.14.2
